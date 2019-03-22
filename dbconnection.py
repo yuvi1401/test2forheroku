@@ -4,7 +4,7 @@ import os
 from dbconfig import user, password, database, host
 
 try:
-    if 'DATABASE_URL' in os.environ:
+    if 'production' in os.environ:
         url = urlparse.urlparse(os.environ['DATABASE_URL'])
         dbname = url.path[1:]
         user = url.username
