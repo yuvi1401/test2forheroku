@@ -1,9 +1,15 @@
 import psycopg2
-from dbconfig import user, password, database
+from dbconfig_prod import user, password, database, host
 
-connection = psycopg2.connect(
+try:
+    connection = psycopg2.connect(
     user=user,
     password=password,
-    database=database)
+    database=database,
+    host=host)
 
-cursor = connection.cursor()
+    cursor = connection.cursor()
+
+except:
+    connection = None
+    cursor = None

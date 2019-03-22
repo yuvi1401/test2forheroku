@@ -1,21 +1,14 @@
 import psycopg2
 import asyncio
-from flask import jsonify
-from dbconfig import user, password, database
 from Invites.invites import get_user_id
 from passlib.hash import pbkdf2_sha256
+from dbconnection import connection, cursor
 
 
 def add_user(username, password):
-    connection = None
     user_added = False
     res={}
     try:
-        connection = psycopg2.connect(
-            user=user,
-            password=password,
-            database=database)
-        cursor = connection.cursor()
 
         encrypted_pw = pbkdf2_sha256.hash(password)
 
@@ -42,14 +35,7 @@ def add_user(username, password):
 def fetch_users():
     res = {}
     list_of_users = []
-    connection = None
     try:
-        connection = psycopg2.connect(
-            user=user,
-            password=password,
-            database=database)
-        cursor = connection.cursor()
-
         cursor.execute("SELECT * FROM users;")
         user_records = cursor.fetchall()
 
@@ -73,13 +59,7 @@ def fetch_users():
 def fetch_user_workspaces(username):
     res = {}
     list_of_user_workspaces = []
-    connection = None
     try:
-        connection = psycopg2.connect(
-            user=user,
-            password=password,
-            database=database)
-        cursor = connection.cursor()
 
         loop = asyncio.new_event_loop()
         user_id = loop.run_until_complete(get_user_id(username))

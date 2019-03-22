@@ -4,13 +4,13 @@ import psycopg2
 from flask import send_file
 from cryptography.fernet import Fernet
 from werkzeug import secure_filename
+from dbconnection import connection, cursor
 
 from Utils.db_ops import get_workspace_id, get_user_id, is_user_admin
 from dbconfig import user, password, database
 
 
 def delete_workspace(delete_request):
-    connection = None
     workspace_deleted = False
     res = {}
 
@@ -26,11 +26,6 @@ def delete_workspace(delete_request):
         if (workspace_id == -1 | deleted_by_id == -1):
             res['error'] = 'Could not locate workspace or user deleting the workspace'
         else:
-            connection = psycopg2.connect(
-                user=user,
-                password=password,
-                database=database)
-            cursor = connection.cursor()
 
             loop = asyncio.new_event_loop()
             admin_status = loop.run_until_complete(is_user_admin(deleted_by_id, workspace_id))
@@ -66,7 +61,6 @@ def delete_workspace(delete_request):
 
 def update_admin(workspace, admin_request):
     workspace_admin_updated = False
-    connection = None
 
     res = {}
 
@@ -88,11 +82,6 @@ def update_admin(workspace, admin_request):
         if (workspace_id == -1 | admin_id == -1 | user_id == -1):
             res['error'] = 'Invalid input. Check username, admin and workspace are correct'
         else:
-            connection = psycopg2.connect(
-                user=user,
-                password=password,
-                database=database)
-            cursor = connection.cursor()
 
             loop = asyncio.new_event_loop()
             admin_status = loop.run_until_complete(is_user_admin(admin_id, workspace_id))
@@ -135,7 +124,6 @@ def create_workspace_only(data):
 
     res = {}
     workspace_added = False
-    connection = None
 
 
     try:
@@ -149,10 +137,6 @@ def create_workspace_only(data):
 
             res['error'] = 'Could not find user in the system so cannot add workspace for user'
         else:
-            connection = psycopg2.connect(
-                user=user,
-                password=password,
-                database=database)
 
             insert_workspace_name = "insert into workspaces (name) values (%s) returning workspace_id"
 
@@ -196,14 +180,9 @@ def create_workspace_with_users(data):
 
     res = {}
     users_added = False
-    connection = None
 
 
     try:
-        connection = psycopg2.connect(
-            database=database)
-
-        cursor = connection.cursor()
 
         insert_workspace_sql = "insert into workspaces (name) values (%s) " \
                                "returning workspace_id"
@@ -250,12 +229,7 @@ def create_workspace_with_users(data):
 
 def add_user_to_workspace(list_of_ids, workspace_id, is_admin=False):
     try:
-        connection = psycopg2.connect(
-            user=user,
-            password=password,
-            database=database)
 
-        cursor = connection.cursor()
         insert_user_to_workspace_sql = "insert into workspace_users (user_id, workspace_id, is_admin) " \
                                        "values (%s,%s,%s) returning user_id"
 
@@ -284,7 +258,6 @@ def add_user_to_workspace(list_of_ids, workspace_id, is_admin=False):
 def delete_user_from_workspace(data):
     res = {}
     user_deleted = False
-    connection = None
 
     try:
         # check if admin_username is the same as the workspace_admins
@@ -292,12 +265,6 @@ def delete_user_from_workspace(data):
         admin_username = data['admin_username']
         workspace_name = data['workspace_name']
 
-        connection = psycopg2.connect(
-            user=user,
-            password=password,
-            database=database)
-
-        cursor = connection.cursor()
         select_user = "select user_id from users where username = (%s)"
         cursor.execute(select_user, [username])
         user_id = cursor.fetchone()
@@ -360,10 +327,6 @@ def encrypt_file(f):
         key = 'rfCFW5NYIJq5qWBLW_bXwHeg4z0PwVM9MDssLtQ-T4o='
         print(key)
 
-        connection = psycopg2.connect(
-            database='ssc'
-        )
-        cursor = connection.cursor()
         filename = secure_filename(f.filename)
 
         print(filename)
@@ -404,10 +367,6 @@ def decrypt_file(data):
         key = 'rfCFW5NYIJq5qWBLW_bXwHeg4z0PwVM9MDssLtQ-T4o='
         print(key)
 
-        connection = psycopg2.connect(
-            database='ssc'
-        )
-        cursor = connection.cursor()
         # filename = secure_filename(f.filename)
 
         with open('S3/downloads/' + filename, 'rb') as f:
@@ -443,13 +402,10 @@ def fetch_workspace_files(name):
 
     list_of_files = []
     res = {}
-    connection = None
+
 
     try:
-        connection = psycopg2.connect(
-            database="ssc")
 
-        cursor = connection.cursor()
         if (name == None):
             res["error"] = "Workspace name is invalid"
         else:
