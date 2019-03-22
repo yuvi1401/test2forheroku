@@ -1,4 +1,4 @@
-web: python SSC server.py
+web: python ssc/server.py
 heroku ps:scale web=1
 
 
