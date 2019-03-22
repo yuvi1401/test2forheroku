@@ -3,10 +3,10 @@ import aiopg
 
 
 from dbconfig import dsn
-from dbconnection import connection, cursor
 
 
 async def get_user_id(username):
+    connection = None
     try:
         pool = await aiopg.create_pool(dsn)
         async with pool.acquire() as connection:
@@ -29,6 +29,7 @@ async def get_user_id(username):
 
 
 async def is_user_admin(user_id, workspace_id):
+    connection = None
     try:
         pool = await aiopg.create_pool(dsn)
         async with pool.acquire() as connection:
@@ -51,6 +52,7 @@ async def is_user_admin(user_id, workspace_id):
 
 
 async def get_workspace_id(workspace):
+    connection = None
 
     try:
         pool = await aiopg.create_pool(dsn)

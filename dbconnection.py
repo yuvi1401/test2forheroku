@@ -1,8 +1,7 @@
 import psycopg2
 import urllib.parse as urlparse
 import os
-from dbconfig_prod import user, password, database, host
-
+from dbconfig import user, password, database, host
 
 try:
     if 'DATABASE_URL' in os.environ:
@@ -23,14 +22,13 @@ try:
 
     else:
         connection = psycopg2.connect(
-        user=user,
-        password=password,
-        database=database,
-        host=host)
+            user=user,
+            password=password,
+            database=database,
+            host=host)
 
     cursor = connection.cursor()
 
 except:
     connection = None
     cursor = None
-
