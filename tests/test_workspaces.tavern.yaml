@@ -1,0 +1,65 @@
+test_name: GET, POST, PUT and DELETE request for api/workspaces/
+
+stages:
+  - name: POST a json object to workspacelist get 201 status
+    request:
+      url: http://0.0.0.0:5000/api/workspaces
+      method: POST
+      json:
+        {'name': 'workspace6',
+         'admin': 'Willmaaaa'}
+    response:
+      status_code: 200
+
+stages:
+  - name: Make sure GET request gives object when requested workspace with 200 status
+    request:
+      url: http://0.0.0.0:5000/api/workspaces/<workspace_name>
+
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      body:
+        {}
+
+stages:
+  - name: DELETE request returns empty object when requested workspace with 204 status
+    request:
+      url: http://0.0.0.0:5000/api/workspaces
+
+      method: DELETE
+      json:
+        {
+          'workspace': 'workspace3',
+          'deleted_by': 'RajAgainstTheMachine'
+        }
+
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      body:
+        {
+          "workspace_deleted": True
+        }
+
+#stages:
+#  - name: PUT request returns updated object when requested workspace with 2000 status code
+#    request:
+#      url: http://0.0.0.0:5000/api/workspaces/<workspace_name>
+#
+#      method: PUT
+#      json:
+#        {
+#          "username": "OllieOllie123",
+#          "admin_username": "Willmaaaa",
+#          "make_admin": "True"
+#        }
+#      response:
+#        status_code: 200
+#        body:
+#         {
+#           'workspace_admin_updated': true
+#         }

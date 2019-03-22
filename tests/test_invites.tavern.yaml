@@ -1,0 +1,37 @@
+test_name: GET, POST request for api/invites/<username>
+
+stages:
+  - name: POST a json object to invitelist get 201 status
+    request:
+      url: http://0.0.0.0:5000/api/invites
+      method: POST
+      json:
+        {'username': 'test',
+         'workspace': 'test',
+         'invitedBy': 'test'}
+    response:
+      status_code: 200
+
+stages:
+  - name: Make sure GET request gives object when requested invites with 200 status
+    request:
+      url: http://0.0.0.0:5000/api/invites/<username>
+
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      body:
+        {}
+
+stages:
+  - name: POST a json object to invitelist get 201 status
+    request:
+      url: http://0.0.0.0:5000/api/invites/<username>
+      method: POST
+      json:
+        {"accept": 'True',
+         "workspace": "workspace2"}
+    response:
+      status_code: 200
