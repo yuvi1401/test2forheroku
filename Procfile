@@ -1,4 +1,4 @@
-web: python server.py
+web: python server.py runserver --host 0.0.0.0 --port ${PORT}
 heroku ps:scale web=1
-app.run(debug=True, host=‘0.0.0.0’, port=port)
+
 
